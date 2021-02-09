@@ -87,3 +87,53 @@ $ cat daemon.json
    
 
 ![image-20210127002139383](C:\Users\Norxus\AppData\Roaming\Typora\typora-user-images\image-20210127002139383.png)
+
+## 记docker-compose测试时遇到的一个小问题
+
+### 起因
+
+没有安装最新的docker，导致和docker-compose不匹配，docker-compose在执行时会使用`--iidfile`这个命令参数，而老版本的`docker build`里面是没有这个参数的，这就导致docker-compose无法执行，因为我在一开始安装docker的时候是直接通过Linux里的默认仓库安装的，导致安装的远古版本的docker。
+
+### 解决办法
+
+1. Docker 要求 CentOS 系统的内核版本高于 3.10 ,查看CentOS的内核版本。 
+
+   ```shell
+   uname -a
+   ```
+
+2. 删除旧版本
+
+   ```shell
+   yum erase 你的docker安装包
+   ```
+
+3. 安装需要的安装包
+
+   1. `yum-util` 提供`yum-config-manager`功能，另外两个是`devicemapper`驱动依赖的
+
+      ```shell
+      sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+      ```
+
+   2. 设置yum源
+
+      ```shell
+      sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      ```
+
+   3. 查看仓库中的版本
+
+      ```shell
+      yum list docker-ce --showduplicates | sort -r
+      ```
+
+   4. 安装你需要的版本
+
+      ```shell
+      sudo yum install docker-ce
+      #上面是安装最新的版本，也可以安装执行的版本
+      sudo yum install docker-ce-18.06.1.ce  
+      ```
+
+      
